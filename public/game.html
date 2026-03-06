@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quiz Game</title>
+    <title>Dual API Quiz Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="dark-theme">
 
-    <h1>Dual API Quiz Game</h1>
+    <div class="card">
+        <h2>Dual API Quiz Game</h2>
 
-    <button id="startBtn">Start Game</button>
+        <button id="startBtn">Start Game</button>
 
-    <div id="questionArea"></div>
+        <div id="questionArea"></div>
 
-    <h3>Score: <span id="score">0</span></h3>
+        <h3>Score: <span id="score">0</span></h3>
 
-    <button id="nextBtn" style="display:none;">Next Question</button>
+        <button id="nextBtn" style="display:none;">Next Question</button>
+    </div>
 
     <script src="game.js"></script>
 </body>

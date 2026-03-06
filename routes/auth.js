@@ -15,7 +15,7 @@ router.post("/register", async (req, res) => {
         [username, hashedPassword],
         (err) => {
             if (err) {
-                return res.status(500).send("Registration failed");
+                return res.send("User already exists");
             }
             res.send("User registered successfully");
         }
@@ -30,15 +30,16 @@ router.post("/login", (req, res) => {
         "SELECT * FROM users WHERE username = ?",
         [username],
         async (err, results) => {
+
             if (results.length === 0) {
-                return res.status(400).send("User not found");
+                return res.send("User not found");
             }
 
             const user = results[0];
-            const valid = await bcrypt.compare(password, user.password);
+            const match = await bcrypt.compare(password, user.password);
 
-            if (!valid) {
-                return res.status(401).send("Invalid password");
+            if (!match) {
+                return res.send("Wrong password");
             }
 
             req.session.userId = user.id;

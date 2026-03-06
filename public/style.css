@@ -1,0 +1,43 @@
+body.dark-theme {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    font-family: Arial, sans-serif;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    background: #0f3460;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #00f5ff;
+    text-align: center;
+    width: 350px;
+}
+
+input {
+    width: 90%;
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    padding: 8px 15px;
+    background: #00f5ff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #00bbcc;
+}
+
+a {
+    color: #00f5ff;
+}

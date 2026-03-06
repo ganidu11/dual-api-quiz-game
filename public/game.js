@@ -5,6 +5,13 @@ document.getElementById("nextBtn").addEventListener("click", loadTriviaQuestion)
 
 async function loadBananaQuestion() {
     const res = await fetch("/game/banana");
+
+    if (res.status === 401) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
     const data = await res.json();
 
     document.getElementById("questionArea").innerHTML = `
@@ -31,9 +38,16 @@ function submitBanana(correctAnswer) {
 
 async function loadTriviaQuestion() {
     const res = await fetch("/game/trivia");
-    const data = await res.json();
 
+    if (res.status === 401) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const data = await res.json();
     const question = data.results[0];
+
     const options = [...question.incorrect_answers, question.correct_answer];
     options.sort(() => Math.random() - 0.5);
 

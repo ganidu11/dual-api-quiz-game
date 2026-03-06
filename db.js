@@ -3,11 +3,11 @@ const mysql = require("mysql2");
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "", // change if you have password
+    password: "",
     database: "quizgame"
 });
 
-connection.connect((err) => {
+connection.connect(err => {
     if (err) {
         console.error("Database connection failed:", err);
     } else {
