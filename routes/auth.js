@@ -5,7 +5,20 @@ const db = require("../db");
 // REGISTER
 router.post("/register",(req,res)=>{
 
-const {username,password} = req.body;
+const username = req.body.username.trim();
+const password = req.body.password.trim();
+
+const checkUser = "SELECT * FROM users WHERE username = ?";
+
+db.query(checkUser,[username],(err,result)=>{
+
+if(err) return res.status(500).send(err);
+
+if(result.length > 0){
+
+return res.json({success:false,message:"User already exists"});
+
+}
 
 const sql = "INSERT INTO users (username,password) VALUES (?,?)";
 
@@ -13,7 +26,9 @@ db.query(sql,[username,password],(err)=>{
 
 if(err) return res.status(500).send(err);
 
-res.send({message:"Registered successfully"});
+res.json({success:true});
+
+});
 
 });
 
@@ -22,23 +37,26 @@ res.send({message:"Registered successfully"});
 // LOGIN
 router.post("/login",(req,res)=>{
 
-const {username,password} = req.body;
+const username = req.body.username.trim();
+const password = req.body.password.trim();
 
-const sql = "SELECT * FROM users WHERE username=? AND password=?";
+const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
 
 db.query(sql,[username,password],(err,result)=>{
 
-if(err) return res.status(500).send(err);
+if(err){
+return res.status(500).send(err);
+}
 
-if(result.length>0){
+if(result.length > 0){
 
 req.session.userId = result[0].id;
 
-res.send({message:"Login success"});
+res.json({success:true});
 
 }else{
 
-res.status(401).send({message:"Invalid credentials"});
+res.json({success:false,message:"Invalid username or password"});
 
 }
 

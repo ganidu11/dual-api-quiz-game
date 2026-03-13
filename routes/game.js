@@ -52,7 +52,7 @@ res.status(500).send(err);
 
 // SAVE SCORE
 router.post("/score",(req,res)=>{
-
+console.log("UserID:",req.session.userId,"Score:",req.body.score);
 if(!req.session.userId){
 return res.status(401).send("Not logged in");
 }

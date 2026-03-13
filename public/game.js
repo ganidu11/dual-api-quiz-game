@@ -158,23 +158,12 @@ function checkTrivia(answer, correct) {
 }
 
 // ---------------- GAME OVER ----------------
+function gameOver(){
 
-function gameOver() {
+clearInterval(timer);
 
-    clearInterval(timer);
+localStorage.setItem("score", score);
 
-    // save score locally
-    localStorage.setItem("score", score);
+window.location.href = "gameover.html";
 
-    // send score to backend
-    fetch("/game/score", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ score: score })
-    });
-
-    // go to game over page
-    window.location.href = "gameover.html";
 }

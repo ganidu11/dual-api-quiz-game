@@ -24,14 +24,32 @@
 
 <script>
 
-document.getElementById("finalScore").innerText =
-localStorage.getItem("score");
+const score = localStorage.getItem("score");
+
+document.getElementById("finalScore").innerText = score;
+
+// SAVE SCORE TO SERVER
+fetch("/game/score",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({score:score})
+})
+.then(res=>res.text())
+.then(data=>{
+console.log("Score saved:",data);
+})
+.catch(err=>{
+console.log("Error saving score:",err);
+});
 
 function playAgain(){
 window.location.href="dashboard.html";
 }
 
 </script>
+
 
 </body>
 </html>
