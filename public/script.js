@@ -1,50 +1,138 @@
-// REGISTER
-const registerForm = document.getElementById("registerForm");
-if (registerForm) {
-    registerForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+let score=0;
+let questionType="banana";
+let timer;
+let timeLeft=15;
 
-        const username = document.getElementById("regUsername").value;
-        const password = document.getElementById("regPassword").value;
+startGame();
 
-        const response = await fetch("/auth/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
-
-        const text = await response.text();
-
-        if (text === "User registered successfully") {
-            alert("Registration successful!");
-            window.location.href = "login.html";
-        } else {
-            document.getElementById("message").innerText = text;
-        }
-    });
+function startGame(){
+nextQuestion();
 }
 
-// LOGIN
-const loginForm = document.getElementById("loginForm");
-if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+function startTimer(){
 
-        const username = document.getElementById("loginUsername").value;
-        const password = document.getElementById("loginPassword").value;
+clearInterval(timer);
 
-        const response = await fetch("/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
+timeLeft=15;
 
-        const text = await response.text();
+document.getElementById("timer").innerText=timeLeft;
 
-        if (text === "Login successful") {
-            window.location.href = "game.html";
-        } else {
-            document.getElementById("message").innerText = text;
-        }
-    });
+timer=setInterval(()=>{
+
+timeLeft--;
+
+document.getElementById("timer").innerText=timeLeft;
+
+if(timeLeft<=0){
+
+clearInterval(timer);
+
+gameOver();
+
+}
+
+},1000);
+
+}
+
+async function nextQuestion(){
+
+if(questionType==="banana"){
+await bananaQuestion();
+questionType="trivia";
+}else{
+await triviaQuestion();
+questionType="banana";
+}
+
+startTimer();
+
+}
+
+async function bananaQuestion(){
+
+const res=await fetch("/game/banana");
+
+const data=await res.json();
+
+document.getElementById("questionArea").innerHTML=
+`<img src="${data.question}" width="250">`;
+
+document.getElementById("answers").innerHTML=
+`
+<input id="bananaAnswer">
+<button onclick="submitBanana(${data.solution})">Submit</button>
+`;
+
+}
+
+function submitBanana(solution){
+
+let ans=document.getElementById("bananaAnswer").value;
+
+if(ans==solution){
+
+score++;
+
+document.getElementById("correctSound").play();
+
+}else{
+
+document.getElementById("wrongSound").play();
+
+}
+
+document.getElementById("score").innerText=score;
+
+nextQuestion();
+
+}
+
+async function triviaQuestion(){
+
+const res=await fetch("/game/trivia");
+
+const data=await res.json();
+
+document.getElementById("questionArea").innerHTML=
+`<h3>${data.question}</h3>`;
+
+let html="";
+
+data.answers.forEach(a=>{
+
+html+=`<button onclick="checkTrivia('${a}','${data.correct}')">${a}</button>`;
+
+});
+
+document.getElementById("answers").innerHTML=html;
+
+}
+
+function checkTrivia(ans,correct){
+
+if(ans===correct){
+
+score++;
+
+document.getElementById("correctSound").play();
+
+}else{
+
+document.getElementById("wrongSound").play();
+
+}
+
+document.getElementById("score").innerText=score;
+
+nextQuestion();
+
+}
+
+function gameOver(){
+
+localStorage.setItem("score",score);
+
+window.location.href="gameover.html";
+
 }

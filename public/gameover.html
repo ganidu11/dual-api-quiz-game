@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Game Over</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="neon-bg">
+
+<div class="gameover-box">
+
+<h1 class="gameover-title">GAME OVER</h1>
+
+<p>Your Score</p>
+
+<h2 id="finalScore"></h2>
+
+<button onclick="playAgain()">PLAY AGAIN</button>
+
+</div>
+
+<audio autoplay src="sounds/gameover.mp3"></audio>
+
+<script>
+
+document.getElementById("finalScore").innerText=
+localStorage.getItem("score");
+
+function playAgain(){
+window.location.href="home.html";
+}
+
+</script>
+
+</body>
+</html>

@@ -1,43 +1,76 @@
-body.dark-theme {
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
-    font-family: Arial, sans-serif;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body{
+margin:0;
+font-family:Arial;
+color:white;
+text-align:center;
 }
 
-.card {
-    background: #0f3460;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px #00f5ff;
-    text-align: center;
-    width: 350px;
+.neon-bg{
+background:linear-gradient(45deg,#020024,#090979,#00d4ff);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+animation:bgmove 10s infinite alternate;
 }
 
-input {
-    width: 90%;
-    padding: 8px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: none;
+@keyframes bgmove{
+0%{background-position:left;}
+100%{background-position:right;}
 }
 
-button {
-    padding: 8px 15px;
-    background: #00f5ff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
+.title{
+font-size:80px;
+color:#00ffff;
+text-shadow:
+0 0 10px #00ffff,
+0 0 20px #00ffff,
+0 0 40px #00ffff,
+0 0 80px #00ffff;
+animation:glow 2s infinite alternate;
 }
 
-button:hover {
-    background: #00bbcc;
+@keyframes glow{
+from{text-shadow:0 0 10px #00ffff;}
+to{text-shadow:0 0 30px #00ffff;}
 }
 
-a {
-    color: #00f5ff;
+.play-btn{
+padding:15px 40px;
+font-size:22px;
+background:#ff00ff;
+border:none;
+border-radius:10px;
+color:white;
+cursor:pointer;
+box-shadow:0 0 15px #ff00ff;
+}
+
+.game-box{
+background:#111;
+padding:30px;
+border-radius:15px;
+width:400px;
+box-shadow:0 0 20px #00ffff;
+}
+
+#timer{
+font-size:28px;
+color:#ff4444;
+margin:10px;
+}
+
+button{
+padding:10px 20px;
+margin:10px;
+border:none;
+background:#00ffff;
+border-radius:6px;
+cursor:pointer;
+}
+
+.gameover-title{
+font-size:60px;
+color:#ff0000;
+text-shadow:0 0 20px red;
 }

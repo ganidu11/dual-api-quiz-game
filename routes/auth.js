@@ -1,51 +1,59 @@
-const express = require("express");
-const bcrypt = require("bcrypt");
-const db = require("../db");
+const express=require("express");
+const router=express.Router();
+const db=require("../db");
 
-const router = express.Router();
+router.post("/register",(req,res)=>{
 
-// Register
-router.post("/register", async (req, res) => {
-    const { username, password } = req.body;
+const {username,password}=req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+db.query(
 
-    db.query(
-        "INSERT INTO users (username, password) VALUES (?, ?)",
-        [username, hashedPassword],
-        (err) => {
-            if (err) {
-                return res.send("User already exists");
-            }
-            res.send("User registered successfully");
-        }
-    );
+"INSERT INTO users(username,password) VALUES(?,?)",
+
+[username,password],
+
+(err)=>{
+
+if(err){
+res.json({success:false});
+}else{
+res.json({success:true});
+}
+
+}
+
+);
+
 });
 
-// Login
-router.post("/login", (req, res) => {
-    const { username, password } = req.body;
+router.post("/login",(req,res)=>{
 
-    db.query(
-        "SELECT * FROM users WHERE username = ?",
-        [username],
-        async (err, results) => {
+const {username,password}=req.body;
 
-            if (results.length === 0) {
-                return res.send("User not found");
-            }
+db.query(
 
-            const user = results[0];
-            const match = await bcrypt.compare(password, user.password);
+"SELECT * FROM users WHERE username=? AND password=?",
 
-            if (!match) {
-                return res.send("Wrong password");
-            }
+[username,password],
 
-            req.session.userId = user.id;
-            res.send("Login successful");
-        }
-    );
+(err,result)=>{
+
+if(result.length>0){
+
+req.session.userId=result[0].id;
+
+res.json({success:true});
+
+}else{
+
+res.json({success:false});
+
+}
+
+}
+
+);
+
 });
 
-module.exports = router;
+module.exports=router;

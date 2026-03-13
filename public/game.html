@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dual API Quiz Game</title>
-    <link rel="stylesheet" href="style.css">
+<title>Quizzle Game</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-theme">
 
-    <div class="card">
-        <h2>Dual API Quiz Game</h2>
+<body class="neon-bg">
 
-        <button id="startBtn">Start Game</button>
+<div class="game-box">
 
-        <div id="questionArea"></div>
+<h2>Quizzle</h2>
 
-        <h3>Score: <span id="score">0</span></h3>
+<div id="timer">15</div>
 
-        <button id="nextBtn" style="display:none;">Next Question</button>
-    </div>
+<div id="questionArea"></div>
 
-    <script src="game.js"></script>
+<div id="answers"></div>
+
+<p>Score: <span id="score">0</span></p>
+
+</div>
+
+<audio id="correctSound" src="sounds/correct.mp3"></audio> <audio id="wrongSound" src="sounds/wrong.mp3"></audio>
+
+<script src="script.js"></script>
+
 </body>
 </html>
