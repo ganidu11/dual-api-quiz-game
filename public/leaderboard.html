@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Leaderboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="neon-bg">
+
+<div class="leaderboard-box">
+
+<h1>Leaderboard</h1>
+
+<table id="leaderboardTable">
+
+<tr>
+<th>Rank</th>
+<th>Player</th>
+<th>Score</th>
+</tr>
+
+</table>
+
+<br>
+
+<button onclick="goBack()">BACK</button>
+
+</div>
+
+<script>
+
+fetch("/game/leaderboard")
+.then(res => res.json())
+.then(data => {
+
+let table = document.getElementById("leaderboardTable");
+
+data.forEach((player, index)=>{
+
+let row = table.insertRow();
+
+row.innerHTML = `
+<td>${index+1}</td>
+<td>${player.username}</td>
+<td>${player.score}</td>
+`;
+
+});
+
+});
+
+function goBack(){
+window.location.href="dashboard.html";
+}
+
+</script>
+
+</body>
+</html>

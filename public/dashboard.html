@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Quizzle Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="neon-bg">
+
+<div class="home">
+
+<h1 class="title">QUIZZLE</h1>
+
+<button class="play-btn" onclick="startGame()">START GAME</button>
+
+<br><br>
+
+<button class="leader-btn" onclick="openLeaderboard()">LEADERBOARD</button>
+
+<br><br>
+
+<button class="logout-btn" onclick="logout()">LOGOUT</button>
+
+</div>
+
+<script>
+
+function startGame(){
+window.location.href="game.html";
+}
+
+function openLeaderboard(){
+window.location.href="leaderboard.html";
+}
+
+function logout(){
+fetch("/auth/logout")
+.then(()=>{
+window.location.href="login.html";
+});
+}
+
+</script>
+
+</body>
+</html>
