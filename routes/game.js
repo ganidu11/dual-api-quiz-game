@@ -3,139 +3,93 @@ const router = express.Router();
 const axios = require("axios");
 const db = require("../db");
 
+// BANANA QUESTION
+router.get("/banana", async (req,res)=>{
 
-// ---------------- BANANA API ----------------
+try{
 
-router.get("/banana", async (req, res) => {
+const response = await axios.get("https://marcconrad.com/uob/banana/api.php");
 
-    try {
+res.json({
+question: response.data.question,
+solution: response.data.solution
+});
 
-        const response = await axios.get("https://marcconrad.com/uob/banana/api.php");
+}catch(err){
 
-        const data = response.data;
+res.status(500).send(err);
 
-        res.json({
-            question: data.question,
-            solution: data.solution
-        });
-
-    } catch (error) {
-
-        console.log("Banana API error:", error);
-
-        res.status(500).json({
-            error: "Failed to fetch banana question"
-        });
-
-    }
+}
 
 });
 
+// TRIVIA QUESTION
+router.get("/trivia", async (req,res)=>{
 
-// ---------------- TRIVIA API ----------------
+try{
 
-router.get("/trivia", async (req, res) => {
+const response = await axios.get("https://the-trivia-api.com/v2/questions?limit=1");
 
-    try {
+const q = response.data[0];
 
-        const response = await axios.get("https://the-trivia-api.com/api/questions?limit=1");
+const answers = [...q.incorrectAnswers, q.correctAnswer];
 
-        const q = response.data[0];
+answers.sort(()=>Math.random()-0.5);
 
-        const answers = [...q.incorrectAnswers, q.correctAnswer];
+res.json({
+question: q.question.text,
+answers: answers,
+correct: q.correctAnswer
+});
 
-        // shuffle answers
-        answers.sort(() => Math.random() - 0.5);
+}catch(err){
 
-        res.json({
-            question: q.question,
-            answers: answers,
-            correct: q.correctAnswer
-        });
+res.status(500).send(err);
 
-    } catch (error) {
-
-        console.log("Trivia API error:", error);
-
-        res.status(500).json({
-            error: "Failed to fetch trivia question"
-        });
-
-    }
+}
 
 });
 
+// SAVE SCORE
+router.post("/score",(req,res)=>{
 
-// ---------------- SAVE SCORE ----------------
+if(!req.session.userId){
+return res.status(401).send("Not logged in");
+}
 
-router.post("/score", (req, res) => {
+const score = req.body.score;
 
-    const { score } = req.body;
+const sql = "INSERT INTO scores (user_id,score) VALUES (?,?)";
 
-    const userId = req.session.userId;
+db.query(sql,[req.session.userId,score],(err)=>{
 
-    if (!userId) {
-        return res.status(401).json({ error: "Not logged in" });
-    }
+if(err) return res.status(500).send(err);
 
-    db.query(
-        "INSERT INTO scores (user_id, score) VALUES (?, ?)",
-        [userId, score],
-        (err) => {
-
-            if (err) {
-
-                console.log(err);
-
-                res.status(500).json({
-                    error: "Failed to save score"
-                });
-
-            } else {
-
-                res.json({
-                    success: true
-                });
-
-            }
-
-        }
-    );
+res.send("Score saved");
 
 });
 
+});
 
-// ---------------- GET LEADERBOARD ----------------
+// LEADERBOARD
+router.get("/leaderboard",(req,res)=>{
 
-router.get("/leaderboard", (req, res) => {
+const sql = `
+SELECT users.username, scores.score
+FROM scores
+JOIN users ON scores.user_id = users.id
+ORDER BY scores.score DESC
+LIMIT 10
+`;
 
-    db.query(
+db.query(sql,(err,result)=>{
 
-        `SELECT users.username, scores.score
-         FROM scores
-         JOIN users ON scores.user_id = users.id
-         ORDER BY scores.score DESC
-         LIMIT 10`,
+if(err) return res.status(500).json(err);
 
-        (err, results) => {
-
-            if (err) {
-
-                res.status(500).json({
-                    error: "Leaderboard error"
-                });
-
-            } else {
-
-                res.json(results);
-
-            }
-
-        }
-
-    );
+res.json(result);
 
 });
 
+});
 
 module.exports = router;

@@ -1,59 +1,58 @@
-const express=require("express");
-const router=express.Router();
-const db=require("../db");
+const express = require("express");
+const router = express.Router();
+const db = require("../db");
 
+// REGISTER
 router.post("/register",(req,res)=>{
 
-const {username,password}=req.body;
+const {username,password} = req.body;
 
-db.query(
+const sql = "INSERT INTO users (username,password) VALUES (?,?)";
 
-"INSERT INTO users(username,password) VALUES(?,?)",
+db.query(sql,[username,password],(err)=>{
 
-[username,password],
+if(err) return res.status(500).send(err);
 
-(err)=>{
-
-if(err){
-res.json({success:false});
-}else{
-res.json({success:true});
-}
-
-}
-
-);
+res.send({message:"Registered successfully"});
 
 });
 
+});
+
+// LOGIN
 router.post("/login",(req,res)=>{
 
-const {username,password}=req.body;
+const {username,password} = req.body;
 
-db.query(
+const sql = "SELECT * FROM users WHERE username=? AND password=?";
 
-"SELECT * FROM users WHERE username=? AND password=?",
+db.query(sql,[username,password],(err,result)=>{
 
-[username,password],
-
-(err,result)=>{
+if(err) return res.status(500).send(err);
 
 if(result.length>0){
 
-req.session.userId=result[0].id;
+req.session.userId = result[0].id;
 
-res.json({success:true});
+res.send({message:"Login success"});
 
 }else{
 
-res.json({success:false});
+res.status(401).send({message:"Invalid credentials"});
 
 }
-
-}
-
-);
 
 });
 
-module.exports=router;
+});
+
+// LOGOUT
+router.get("/logout",(req,res)=>{
+
+req.session.destroy(()=>{
+res.send({message:"Logged out"});
+});
+
+});
+
+module.exports = router;

@@ -4,19 +4,13 @@ let timer;
 let timeLeft = 15;
 
 // start game when page loads
-window.onload = () => {
-    startGame();
-};
-
-// ---------------- START GAME ----------------
-
-function startGame(){
+window.onload = function () {
     nextQuestion();
-}
+};
 
 // ---------------- TIMER ----------------
 
-function startTimer(){
+function startTimer() {
 
     clearInterval(timer);
 
@@ -24,13 +18,13 @@ function startTimer(){
 
     document.getElementById("timer").innerText = "Time: " + timeLeft;
 
-    timer = setInterval(() => {
+    timer = setInterval(function () {
 
         timeLeft--;
 
         document.getElementById("timer").innerText = "Time: " + timeLeft;
 
-        if(timeLeft <= 0){
+        if (timeLeft <= 0) {
 
             clearInterval(timer);
 
@@ -38,23 +32,21 @@ function startTimer(){
 
         }
 
-    },1000);
+    }, 1000);
 }
 
 // ---------------- NEXT QUESTION ----------------
 
-async function nextQuestion(){
+async function nextQuestion() {
 
-    if(questionType === "banana"){
+    if (questionType === "banana") {
 
         await loadBananaQuestion();
-
         questionType = "trivia";
 
     } else {
 
         await loadTriviaQuestion();
-
         questionType = "banana";
 
     }
@@ -64,43 +56,40 @@ async function nextQuestion(){
 
 // ---------------- BANANA QUESTION ----------------
 
-async function loadBananaQuestion(){
+async function loadBananaQuestion() {
 
-    try{
+    try {
 
         const res = await fetch("/game/banana");
         const data = await res.json();
 
-        document.getElementById("questionArea").innerHTML =
-        `
-        <h3>Banana Puzzle</h3>
-        <img src="${data.question}" width="250">
+        document.getElementById("questionArea").innerHTML = `
+            <h3>Banana Puzzle</h3>
+            <img src="${data.question}" width="250">
         `;
 
-        document.getElementById("answers").innerHTML =
-        `
-        <input type="number" id="bananaAnswer" placeholder="Your answer">
-        <br>
-        <button onclick="submitBanana(${data.solution})">Submit</button>
+        document.getElementById("answers").innerHTML = `
+            <input type="number" id="bananaAnswer" placeholder="Your answer">
+            <br><br>
+            <button onclick="submitBanana(${data.solution})">Submit</button>
         `;
 
-    } catch(error){
+    } catch (error) {
 
-        console.log("Banana question error:", error);
+        console.log("Banana API error:", error);
 
     }
 }
 
 // ---------------- CHECK BANANA ANSWER ----------------
 
-function submitBanana(solution){
+function submitBanana(solution) {
 
     const userAnswer = document.getElementById("bananaAnswer").value;
 
-    if(userAnswer == solution){
+    if (userAnswer == solution) {
 
         score++;
-
         document.getElementById("correctSound").play();
 
     } else {
@@ -116,44 +105,45 @@ function submitBanana(solution){
 
 // ---------------- TRIVIA QUESTION ----------------
 
-async function loadTriviaQuestion(){
+async function loadTriviaQuestion() {
 
-    try{
+    try {
 
         const res = await fetch("/game/trivia");
         const data = await res.json();
 
-        document.getElementById("questionArea").innerHTML =
-        `<h3>${data.question}</h3>`;
+        document.getElementById("questionArea").innerHTML = `
+            <h3>${data.question}</h3>
+        `;
 
         let answersHTML = "";
 
-        data.answers.forEach(answer => {
+        data.answers.forEach(function (answer) {
 
-            answersHTML +=
-            `<button onclick="checkTrivia('${answer}','${data.correct}')">
-            ${answer}
-            </button><br>`;
+            answersHTML += `
+                <button onclick="checkTrivia('${answer}','${data.correct}')">
+                ${answer}
+                </button><br><br>
+            `;
 
         });
 
         document.getElementById("answers").innerHTML = answersHTML;
 
-    } catch(error){
+    } catch (error) {
 
-        console.log("Trivia question error:", error);
+        console.log("Trivia API error:", error);
 
     }
 }
 
 // ---------------- CHECK TRIVIA ANSWER ----------------
 
-function checkTrivia(answer, correct){
+function checkTrivia(answer, correct) {
 
-    if(answer === correct){
+    if (answer === correct) {
 
         score++;
-
         document.getElementById("correctSound").play();
 
     } else {
@@ -169,7 +159,9 @@ function checkTrivia(answer, correct){
 
 // ---------------- GAME OVER ----------------
 
-function gameOver(){
+function gameOver() {
+
+    clearInterval(timer);
 
     // save score locally
     localStorage.setItem("score", score);
@@ -180,8 +172,9 @@ function gameOver(){
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({score: score})
+        body: JSON.stringify({ score: score })
     });
 
+    // go to game over page
     window.location.href = "gameover.html";
 }
