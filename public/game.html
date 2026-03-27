@@ -1,29 +1,34 @@
 <!DOCTYPE html>
+
 <html>
 <head>
 <title>Quizzle Game</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="neon-bg">
+<body>
 
-<div class="game-box">
+<div class="game-container glass">
 
-<h2>Quizzle</h2>
+<h2>Score: <span id="score">0</span></h2>
+<div class="level">Level: <span id="level">1</span></div>
 
-<div id="timer">15</div>
+<div class="timer-bar">
+<div id="timerProgress"></div>
+</div>
 
 <div id="questionArea"></div>
-
 <div id="answers"></div>
 
-<p>Score: <span id="score">0</span></p>
+<div id="loader" class="loader" style="display:none;"></div>
+
+<button onclick="toggleMusic()">🎵</button>
 
 </div>
 
-<audio id="correctSound" src="sounds/correct.mp3"></audio> <audio id="wrongSound" src="sounds/wrong.mp3"></audio>
+<audio id="bgMusic" autoplay loop src="sounds/music.mp3"></audio> <audio id="correctSound" src="sounds/correct.mp3"></audio> <audio id="wrongSound" src="sounds/wrong.mp3"></audio>
 
-<script src="script.js"></script>
+<script src="game.js"></script>
 
 </body>
 </html>
