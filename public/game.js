@@ -1,169 +1,147 @@
 let score = 0;
+let level = 1;
 let questionType = "banana";
-let timer;
 let timeLeft = 15;
+let timer;
 
-// start game when page loads
-window.onload = function () {
-    nextQuestion();
-};
+// START
+window.onload = ()=> nextQuestion();
 
-// ---------------- TIMER ----------------
-
-function startTimer() {
-
-    clearInterval(timer);
-
-    timeLeft = 15;
-
-    document.getElementById("timer").innerText = "Time: " + timeLeft;
-
-    timer = setInterval(function () {
-
-        timeLeft--;
-
-        document.getElementById("timer").innerText = "Time: " + timeLeft;
-
-        if (timeLeft <= 0) {
-
-            clearInterval(timer);
-
-            gameOver();
-
-        }
-
-    }, 1000);
-}
-
-// ---------------- NEXT QUESTION ----------------
-
-async function nextQuestion() {
-
-    if (questionType === "banana") {
-
-        await loadBananaQuestion();
-        questionType = "trivia";
-
-    } else {
-
-        await loadTriviaQuestion();
-        questionType = "banana";
-
-    }
-
-    startTimer();
-}
-
-// ---------------- BANANA QUESTION ----------------
-
-async function loadBananaQuestion() {
-
-    try {
-
-        const res = await fetch("/game/banana");
-        const data = await res.json();
-
-        document.getElementById("questionArea").innerHTML = `
-            <h3>Banana Puzzle</h3>
-            <img src="${data.question}" width="250">
-        `;
-
-        document.getElementById("answers").innerHTML = `
-            <input type="number" id="bananaAnswer" placeholder="Your answer">
-            <br><br>
-            <button onclick="submitBanana(${data.solution})">Submit</button>
-        `;
-
-    } catch (error) {
-
-        console.log("Banana API error:", error);
-
-    }
-}
-
-// ---------------- CHECK BANANA ANSWER ----------------
-
-function submitBanana(solution) {
-
-    const userAnswer = document.getElementById("bananaAnswer").value;
-
-    if (userAnswer == solution) {
-
-        score++;
-        document.getElementById("correctSound").play();
-
-    } else {
-
-        document.getElementById("wrongSound").play();
-
-    }
-
-    document.getElementById("score").innerText = score;
-
-    nextQuestion();
-}
-
-// ---------------- TRIVIA QUESTION ----------------
-
-async function loadTriviaQuestion() {
-
-    try {
-
-        const res = await fetch("/game/trivia");
-        const data = await res.json();
-
-        document.getElementById("questionArea").innerHTML = `
-            <h3>${data.question}</h3>
-        `;
-
-        let answersHTML = "";
-
-        data.answers.forEach(function (answer) {
-
-            answersHTML += `
-                <button onclick="checkTrivia('${answer}','${data.correct}')">
-                ${answer}
-                </button><br><br>
-            `;
-
-        });
-
-        document.getElementById("answers").innerHTML = answersHTML;
-
-    } catch (error) {
-
-        console.log("Trivia API error:", error);
-
-    }
-}
-
-// ---------------- CHECK TRIVIA ANSWER ----------------
-
-function checkTrivia(answer, correct) {
-
-    if (answer === correct) {
-
-        score++;
-        document.getElementById("correctSound").play();
-
-    } else {
-
-        document.getElementById("wrongSound").play();
-
-    }
-
-    document.getElementById("score").innerText = score;
-
-    nextQuestion();
-}
-
-// ---------------- GAME OVER ----------------
-function gameOver(){
-
+// TIMER
+function startTimer(){
 clearInterval(timer);
+timeLeft = 15;
 
-localStorage.setItem("score", score);
+timer = setInterval(()=>{
+timeLeft--;
 
-window.location.href = "gameover.html";
+document.getElementById("timerProgress").style.width =
+(timeLeft/15)*100 + "%";
 
+if(timeLeft<=0){
+clearInterval(timer);
+gameOver();
+}
+},1000);
+}
+
+// LOADER
+function showLoader(show){
+document.getElementById("loader").style.display = show?"block":"none";
+}
+
+// NEXT QUESTION
+async function nextQuestion(){
+
+showLoader(true);
+
+setTimeout(async()=>{
+
+if(questionType==="banana"){
+await loadBanana();
+questionType="trivia";
+}else{
+await loadTrivia();
+questionType="banana";
+}
+
+showLoader(false);
+startTimer();
+
+},800);
+}
+
+// BANANA
+async function loadBanana(){
+const res = await fetch("/game/banana");
+const data = await res.json();
+
+document.getElementById("questionArea").innerHTML =
+`<img src="${data.question}" width="250">`;
+
+document.getElementById("answers").innerHTML =
+`<input id="bananaAns" type="number">
+<button onclick="checkBanana(${data.solution})">Submit</button>`;
+}
+
+// TRIVIA
+async function loadTrivia(){
+const res = await fetch("/game/trivia");
+const data = await res.json();
+
+let html="";
+data.answers.forEach(a=>{
+html+=`<button onclick="checkTrivia('${a}','${data.correct}',this)">${a}</button>`;
+});
+
+document.getElementById("questionArea").innerText = data.question;
+document.getElementById("answers").innerHTML = html;
+}
+
+// CHECK
+function checkBanana(ans){
+let val=document.getElementById("bananaAns").value;
+
+if(val==ans){
+correct();
+}else{
+wrong();
+}
+nextQuestion();
+}
+
+function checkTrivia(a,c,btn){
+animate(btn);
+
+if(a===c){
+correct();
+}else{
+wrong();
+}
+nextQuestion();
+}
+
+// EFFECTS
+function correct(){
+score++;
+update();
+flash("#00ffcc");
+document.getElementById("correctSound").play();
+}
+
+function wrong(){
+flash("#ff0033");
+document.getElementById("wrongSound").play();
+}
+
+function flash(color){
+document.body.style.background=color;
+setTimeout(()=>document.body.style.background="",200);
+}
+
+function animate(btn){
+btn.style.transform="scale(0.9)";
+setTimeout(()=>btn.style.transform="scale(1)",100);
+}
+
+// UPDATE
+function update(){
+document.getElementById("score").innerText=score;
+
+if(score%5===0){
+level++;
+document.getElementById("level").innerText=level;
+}
+}
+
+// MUSIC
+function toggleMusic(){
+let m=document.getElementById("bgMusic");
+m.paused?m.play():m.pause();
+}
+
+// GAME OVER
+function gameOver(){
+localStorage.setItem("score",score);
+window.location.href="gameover.html";
 }
