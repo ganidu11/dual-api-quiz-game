@@ -2,43 +2,28 @@
 
 <html>
 <head>
-<title>Quizzle Dashboard</title>
+<title>Dashboard</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="neon-bg">
-
-<div class="home">
+<body>
 
 <h1 class="title">QUIZZLE</h1>
 
-<button class="play-btn" onclick="startGame()">START GAME</button>
+<div style="text-align:center">
 
-<br><br>
-
-<button class="leader-btn" onclick="openLeaderboard()">LEADERBOARD</button>
-
-<br><br>
-
-<button class="logout-btn" onclick="logout()">LOGOUT</button>
+<button onclick="start()">Start Game</button> <button onclick="leader()">Leaderboard</button> <button onclick="logout()">Logout</button>
 
 </div>
 
 <script>
 
-function startGame(){
-window.location.href="game.html";
-}
-
-function openLeaderboard(){
-window.location.href="leaderboard.html";
-}
+function start(){ window.location="game.html"; }
+function leader(){ window.location="leaderboard.html"; }
 
 function logout(){
 fetch("/auth/logout")
-.then(()=>{
-window.location.href="login.html";
-});
+.then(()=>window.location="login.html");
 }
 
 </script>
