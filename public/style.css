@@ -105,3 +105,12 @@ margin-top:60px;
 .gold{color:gold;font-weight:bold;}
 .silver{color:silver;}
 .bronze{color:#cd7f32;}
+
+.center-screen{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+height:100vh;
+text-align:center;
+}

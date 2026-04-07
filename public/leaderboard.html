@@ -6,52 +6,47 @@
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="neon-bg">
+<body>
 
-<div class="leaderboard-box">
+<div class="leaderboard-box glass">
 
 <h1>Leaderboard</h1>
 
-<table id="leaderboardTable">
+<table id="table"></table>
 
-<tr>
-<th>Rank</th>
-<th>Player</th>
-<th>Score</th>
-</tr>
-
-</table>
-
-<br>
-
-<button onclick="goBack()">BACK</button>
+<button onclick="back()">Back</button>
 
 </div>
 
 <script>
 
 fetch("/game/leaderboard")
-.then(res => res.json())
-.then(data => {
+.then(res=>res.json())
+.then(data=>{
 
-let table = document.getElementById("leaderboardTable");
+let t=document.getElementById("table");
 
-data.forEach((player, index)=>{
+data.forEach((p,i)=>{
 
-let row = table.insertRow();
+let cls="";
+if(i==0)cls="gold";
+if(i==1)cls="silver";
+if(i==2)cls="bronze";
 
-row.innerHTML = `
-<td>${index+1}</td>
-<td>${player.username}</td>
-<td>${player.score}</td>
+t.innerHTML+=`
+<tr class="${cls}">
+<td>${i+1}</td>
+<td>${p.username}</td>
+<td>${p.score}</td>
+</tr>
 `;
 
 });
 
 });
 
-function goBack(){
-window.location.href="dashboard.html";
+function back(){
+window.location="dashboard.html";
 }
 
 </script>
