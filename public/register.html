@@ -1,6 +1,8 @@
 <!DOCTYPE html>
+
 <html>
 <head>
+<title>Register</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -10,48 +12,17 @@
 
 <h2>Register</h2>
 
-<form onsubmit="return register()">
+<form method="POST" action="/auth/register">
 
-<input id="username" placeholder="Username"><br>
-<input id="password" type="password" placeholder="Password"><br>
+<input name="username" placeholder="Username" required><br> <input name="password" type="password" placeholder="Password" required><br>
 
-<button>Register</button>
+<button type="submit">Register</button>
 
 </form>
 
 <p><a href="login.html">Back to login</a></p>
 
 </div>
-<script>
-
-async function register(){
-
-let u = document.getElementById("username").value;
-let p = document.getElementById("password").value;
-
-let regex=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
-if(!regex.test(p)){
-alert("Weak password");
-return false;
-}
-
-let res = await fetch("/auth/register",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({username:u,password:p})
-});
-
-let text = await res.text();
-
-alert(text);
-
-window.location="login.html";
-
-return false;
-}
-
-</script>
 
 </body>
 </html>

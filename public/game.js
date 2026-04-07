@@ -53,7 +53,9 @@ startTimer();
 
 // BANANA
 async function loadBanana(){
-const res = await fetch("/game/banana");
+const res = await fetch("/game/banana", {
+    credentials: "include"
+});
 const data = await res.json();
 
 document.getElementById("questionArea").innerHTML =
@@ -66,7 +68,9 @@ document.getElementById("answers").innerHTML =
 
 // TRIVIA
 async function loadTrivia(){
-const res = await fetch("/game/trivia");
+const res = await fetch("/game/trivia", {
+    credentials: "include"
+});
 const data = await res.json();
 
 let html="";

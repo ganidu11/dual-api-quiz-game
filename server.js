@@ -3,94 +3,114 @@ const session = require("express-session");
 const mysql = require("mysql2");
 const axios = require("axios");
 const bcrypt = require("bcrypt");
-const path = require("path");
 
 const app = express();
 
-app.use(express.json());
+// ✅ MIDDLEWARE
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use(session({
     secret: "secret123",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    cookie: {
+        secure: false,
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60
+    }
 }));
 
 app.use(express.static("public"));
 
+// ✅ DATABASE CONNECTION
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
     database: "quizgame"
 });
-db.connect((err)=>{
-    if(err){
-        console.log("DB ERROR:", err);
-    }else{
-        console.log("Database Connected ✅");
+
+db.connect((err) => {
+    if (err) {
+        console.log("❌ DB ERROR:", err);
+    } else {
+        console.log("✅ Database Connected");
     }
 });
 
-
-// AUTH CHECK
-function checkAuth(req, res, next){
-    if(!req.session.userId){
-        return res.status(401).send("Login required");
+// ✅ AUTH CHECK
+function checkAuth(req, res, next) {
+    if (!req.session.userId) {
+        return res.send("Please login first");
     }
     next();
 }
 
-// REGISTER
+// ======================
+// ✅ REGISTER (FIXED)
+// ======================
 app.post("/auth/register", async (req, res) => {
 
+    console.log("REGISTER HIT");
+
     const { username, password } = req.body;
-    console.log("REGISTER DATA:", username,password);
+    console.log("DATA:", username, password);
 
-    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
-    if (!strongPassword.test(password)) {
-        console.log("Weak password");
-        return res.send("Weak password");
+    if (!username || !password) {
+        return res.send("Missing fields");
     }
 
     try {
         const hashed = await bcrypt.hash(password, 10);
 
-        console.log("Hashed:", hashed);
-
         db.query(
             "INSERT INTO users (username, password) VALUES (?, ?)",
             [username, hashed],
-            (err) => {
+            (err, result) => {
+
                 if (err) {
-                    console.log("DB ERROR:", err);
-                    return res.send("User exists");
+                    console.log("❌ DB ERROR:", err);
+                    return res.send("User exists or DB error");
                 }
 
-                console.log("User inserted successfully");
-                res.send("Registered");
-            }
+                console.log("✅ USER INSERTED:", result);
 
+                // redirect to login after register
+                res.redirect("/login.html");
+            }
         );
+
     } catch (err) {
-        console.log("SERVER ERROR:", err);
-        res.send("Error");
+        console.log("❌ SERVER ERROR:", err);
+        res.send("Server error");
     }
 });
 
-// LOGIN
+// ======================
+// ✅ LOGIN (FORM BASED - FIXED)
+// ======================
 app.post("/auth/login", (req, res) => {
 
+    console.log("LOGIN HIT");
+
     const { username, password } = req.body;
+    console.log("LOGIN DATA:", username, password);
 
     db.query(
         "SELECT * FROM users WHERE username=?",
         [username],
         async (err, result) => {
 
-            if (result.length === 0)
-                return res.send("Invalid");
+            if (err) {
+                console.log("❌ DB ERROR:", err);
+                return res.send("Database error");
+            }
+
+            if (result.length === 0) {
+                console.log("❌ USER NOT FOUND");
+                return res.send("Invalid login");
+            }
 
             const user = result[0];
 
@@ -98,60 +118,113 @@ app.post("/auth/login", (req, res) => {
 
             if (match) {
                 req.session.userId = user.id;
-                res.send("Success");
+
+                console.log("✅ LOGIN SUCCESS, USER ID:", user.id);
+
+                res.redirect("/dashboard.html");
+
             } else {
-                res.send("Invalid");
+                console.log("❌ PASSWORD WRONG");
+                res.send("Invalid login");
             }
         }
     );
 });
 
-// LOGOUT
-app.get("/auth/logout", (req,res)=>{
-    req.session.destroy(()=>{
-        res.send("Logged out");
+// ======================
+// ✅ LOGOUT
+// ======================
+app.get("/auth/logout", (req, res) => {
+    req.session.destroy(() => {
+        res.redirect("/login.html");
     });
 });
 
+// ======================
+// ✅ TEST SESSION
+// ======================
+app.get("/test-session", (req, res) => {
+    console.log("SESSION CHECK:", req.session.userId);
+    res.send("UserID: " + req.session.userId);
+});
+
+// ======================
+// 🎮 GAME APIs
+// ======================
+
 // BANANA API
-app.get("/game/banana", checkAuth, async (req,res)=>{
-    try{
+app.get("/game/banana", checkAuth, async (req, res) => {
+    try {
         const r = await axios.get("https://marcconrad.com/uob/banana/api.php");
         res.json(r.data);
-    }catch{
+    } catch (err) {
+        console.log("❌ BANANA API ERROR:", err);
         res.send("API error");
     }
 });
 
 // TRIVIA API
-app.get("/game/trivia", checkAuth, async (req,res)=>{
-    const r = await axios.get("https://the-trivia-api.com/v2/questions");
-    const q = r.data[0];
+app.get("/game/trivia", checkAuth, async (req, res) => {
+    try {
+        const r = await axios.get("https://the-trivia-api.com/v2/questions");
+        const q = r.data[0];
 
-    res.json({
-        question: q.question.text,
-        correct: q.correctAnswer,
-        answers: [...q.incorrectAnswers, q.correctAnswer].sort()
-    });
+        res.json({
+            question: q.question.text,
+            correct: q.correctAnswer,
+            answers: [...q.incorrectAnswers, q.correctAnswer].sort()
+        });
+    } catch (err) {
+        console.log("❌ TRIVIA API ERROR:", err);
+        res.send("API error");
+    }
 });
 
-// SAVE SCORE
-app.post("/game/score", checkAuth, (req,res)=>{
+// ======================
+// 🏆 SAVE SCORE
+// ======================
+app.post("/game/score", checkAuth, (req, res) => {
+
     const score = req.body.score;
 
+    console.log("SCORE SAVE:", req.session.userId, score);
+
     db.query(
-        "INSERT INTO scores (user_id, score) VALUES (?,?)",
+        "INSERT INTO scores (user_id, score) VALUES (?, ?)",
         [req.session.userId, score],
-        ()=> res.send("Saved")
+        (err) => {
+            if (err) {
+                console.log("❌ SCORE ERROR:", err);
+                return res.send("Error saving score");
+            }
+
+            console.log("✅ SCORE SAVED");
+            res.send("Saved");
+        }
     );
 });
 
-// LEADERBOARD
-app.get("/game/leaderboard", (req,res)=>{
+// ======================
+// 🏆 LEADERBOARD
+// ======================
+app.get("/game/leaderboard", (req, res) => {
+
     db.query(
-        "SELECT users.username, scores.score FROM scores JOIN users ON users.id=scores.user_id ORDER BY score DESC LIMIT 10",
-        (err,result)=> res.json(result)
+        "SELECT users.username, scores.score FROM scores JOIN users ON users.id = scores.user_id ORDER BY score DESC LIMIT 10",
+        (err, result) => {
+            if (err) {
+                console.log("❌ LEADERBOARD ERROR:", err);
+                return res.send("Error");
+            }
+
+            res.json(result);
+        }
     );
 });
 
-app.listen(3000, ()=> console.log("Server running"));
+// ======================
+// 🚀 START SERVER
+// ======================
+app.listen(3000, () => {
+    console.log("🚀 Server running on http://localhost:3000");
+});

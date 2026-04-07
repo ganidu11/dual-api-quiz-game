@@ -1,6 +1,8 @@
 <!DOCTYPE html>
+
 <html>
 <head>
+<title>Login</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -10,49 +12,17 @@
 
 <h2>Login</h2>
 
-<form onsubmit="return login()">
+<form method="POST" action="/auth/login">
 
-<input id="username" placeholder="Username"><br>
-<input id="password" type="password" placeholder="Password"><br>
+<input name="username" placeholder="Username" required><br> <input name="password" type="password" placeholder="Password" required><br>
 
-<button>Login</button>
+<button type="submit">Login</button>
 
 </form>
 
 <p>Don't have an account? <a href="register.html">Register now</a></p>
 
 </div>
-
-<script>
-
-async function login(){
-
-let u = document.getElementById("username").value;
-let p = document.getElementById("password").value;
-
-if(u=="" || p==""){
-alert("Fill all fields");
-return false;
-}
-
-let res = await fetch("/auth/login",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({username:u,password:p})
-});
-
-let text = await res.text();
-
-if(text==="Success"){
-window.location="dashboard.html";
-}else{
-alert("Invalid login");
-}
-
-return false;
-}
-
-</script>
 
 </body>
 </html>
