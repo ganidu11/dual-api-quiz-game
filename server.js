@@ -24,6 +24,14 @@ const db = mysql.createConnection({
     password: "",
     database: "quizgame"
 });
+db.connect((err)=>{
+    if(err){
+        console.log("DB ERROR:", err);
+    }else{
+        console.log("Database Connected ✅");
+    }
+});
+
 
 // AUTH CHECK
 function checkAuth(req, res, next){
@@ -37,25 +45,36 @@ function checkAuth(req, res, next){
 app.post("/auth/register", async (req, res) => {
 
     const { username, password } = req.body;
+    console.log("REGISTER DATA:", username,password);
 
     const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
     if (!strongPassword.test(password)) {
+        console.log("Weak password");
         return res.send("Weak password");
     }
 
     try {
         const hashed = await bcrypt.hash(password, 10);
 
+        console.log("Hashed:", hashed);
+
         db.query(
             "INSERT INTO users (username, password) VALUES (?, ?)",
             [username, hashed],
             (err) => {
-                if (err) return res.send("User exists");
+                if (err) {
+                    console.log("DB ERROR:", err);
+                    return res.send("User exists");
+                }
+
+                console.log("User inserted successfully");
                 res.send("Registered");
             }
+
         );
-    } catch {
+    } catch (err) {
+        console.log("SERVER ERROR:", err);
         res.send("Error");
     }
 });
