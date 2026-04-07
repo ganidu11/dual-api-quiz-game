@@ -1,27 +1,25 @@
 <!DOCTYPE html>
-
 <html>
 <head>
-<title>Quizzle Register</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="neon-bg">
+<body>
 
-<div class="form-box">
+<div class="center-screen glass">
 
-<h2 class="form-title">Create Account</h2>
+<h2>Register</h2>
 
-<input type="text" id="username" placeholder="Username">
+<form onsubmit="return register()">
 
-<input type="password" id="password" placeholder="Password">
+<input id="username" placeholder="Username"><br>
+<input id="password" type="password" placeholder="Password"><br>
 
-<button class="neon-btn" onclick="register()">Register</button>
+<button>Register</button>
 
-<p class="link-text">
-Already have account?
-<a href="login.html">Login</a>
-</p>
+</form>
+
+<p><a href="login.html">Back to login</a></p>
 
 </div>
 
@@ -29,31 +27,29 @@ Already have account?
 
 async function register(){
 
-const username=document.getElementById("username").value;
-const password=document.getElementById("password").value;
+let u = document.getElementById("username").value;
+let p = document.getElementById("password").value;
 
-const res=await fetch("/auth/register",{
+let regex=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({username,password})
-
-});
-
-const data=await res.json();
-
-if(data.success){
-
-alert("Registration successful!");
-
-window.location.href="login.html";
-
-}else{
-
-alert(data.message);
-
+if(!regex.test(p)){
+alert("Weak password");
+return false;
 }
 
+let res = await fetch("/auth/register",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:u,password:p})
+});
+
+let text = await res.text();
+
+alert(text);
+
+window.location="login.html";
+
+return false;
 }
 
 </script>

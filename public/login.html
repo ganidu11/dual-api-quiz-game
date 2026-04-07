@@ -1,27 +1,25 @@
 <!DOCTYPE html>
-
 <html>
 <head>
-<title>Quizzle Login</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="neon-bg">
+<body>
 
-<div class="form-box">
+<div class="center-screen glass">
 
-<h2 class="form-title">Login</h2>
+<h2>Login</h2>
 
-<input type="text" id="username" placeholder="Username">
+<form onsubmit="return login()">
 
-<input type="password" id="password" placeholder="Password">
+<input id="username" placeholder="Username"><br>
+<input id="password" type="password" placeholder="Password"><br>
 
-<button class="neon-btn" onclick="login()">Login</button>
+<button>Login</button>
 
-<p class="link-text">
-Don't have an account?
-<a href="register.html">Register now</a>
-</p>
+</form>
+
+<p>Don't have an account? <a href="register.html">Register now</a></p>
 
 </div>
 
@@ -29,27 +27,29 @@ Don't have an account?
 
 async function login(){
 
-const username=document.getElementById("username").value;
-const password=document.getElementById("password").value;
+let u = document.getElementById("username").value;
+let p = document.getElementById("password").value;
 
-const res=await fetch("/auth/login",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({username,password})
-});
-
-const data=await res.json();
-
-if(data.success){
-
-window.location.href="dashboard.html";
-
-}else{
-
-alert(data.message || "Invalid login");
-
+if(u=="" || p==""){
+alert("Fill all fields");
+return false;
 }
 
+let res = await fetch("/auth/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:u,password:p})
+});
+
+let text = await res.text();
+
+if(text==="Success"){
+window.location="dashboard.html";
+}else{
+alert("Invalid login");
+}
+
+return false;
 }
 
 </script>
