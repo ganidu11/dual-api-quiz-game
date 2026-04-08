@@ -15,13 +15,23 @@ timeLeft = 15;
 timer = setInterval(()=>{
 timeLeft--;
 
-document.getElementById("timerProgress").style.width =
-(timeLeft/15)*100 + "%";
+let progress = document.getElementById("timerProgress");
+
+// update width
+progress.style.width = (timeLeft/15)*100 + "%";
+
+// 🔥 turn red in last 5 seconds
+if(timeLeft <= 5){
+progress.style.background = "#ff0033";
+}else{
+progress.style.background = "linear-gradient(90deg,#00f7ff,#9d00ff)";
+}
 
 if(timeLeft<=0){
 clearInterval(timer);
 gameOver();
 }
+
 },1000);
 }
 

@@ -70,3 +70,24 @@ gap:10px;
 #answers button{
 width:250px;
 }
+
+/* TIMER BAR CONTAINER */
+.timer-bar{
+width: 100%;
+max-width: 400px;
+height: 12px;
+background: rgba(255,255,255,0.1);
+border-radius: 10px;
+overflow: hidden;
+margin: 15px auto;
+box-shadow: 0 0 10px #00f7ff;
+}
+
+/* TIMER PROGRESS */
+#timerProgress{
+height: 100%;
+width: 100%;
+background: linear-gradient(90deg,#00f7ff,#9d00ff);
+transition: width 1s linear;
+box-shadow: 0 0 15px #00f7ff;
+}
