@@ -3,9 +3,23 @@ margin:0;
 font-family:'Segoe UI',sans-serif;
 color:white;
 
-background:linear-gradient(270deg,#0f0c29,#302b63,#24243e);
-background-size:600% 600%;
-animation:bg 10s infinite;
+/* IMAGE BACKGROUND */
+background: url("images/bg.jpg") no-repeat center center fixed;
+background-size: cover;
+
+/* DARK OVERLAY */
+position: relative;
+}
+
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+z-index:-1;
 }
 
 @keyframes bg{
@@ -105,4 +119,17 @@ text-align:center;
 font-size:60px;
 color:#ff0033;
 text-shadow:0 0 20px #ff0033;
+}
+.home{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+height:100vh;
+text-align:center;
+}
+
+.play-btn{
+width:220px;
+font-size:18px;
 }
