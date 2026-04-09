@@ -1,3 +1,7 @@
+// 🔊 PRELOAD GAME OVER SOUND
+const gameOverSound = new Audio("sounds/gameover.mp3");
+gameOverSound.preload = "auto";
+
 let score = 0;
 let level = 1;
 let questionType = "banana";
@@ -156,6 +160,35 @@ m.paused?m.play():m.pause();
 
 // GAME OVER
 function gameOver(){
+
+clearInterval(timer);
+
+// 🔊 PLAY SOUND (this WILL work because user is already interacting)
+const sound = new Audio("sounds/gameover.mp3");
+sound.currentTime = 0;
+sound.volume = 1;
+sound.play().catch(err => console.log(err));
+
+// SAVE SCORE
 localStorage.setItem("score",score);
-window.location.href="gameover.html";
+
+// 🎮 SHOW GAME OVER UI INSIDE SAME PAGE
+document.body.innerHTML = `
+<div class="center-screen glass">
+    <h1 class="title">GAME OVER</h1>
+    <h2>Your Score: ${score}</h2>
+    <button onclick="goDashboard()">Play Again</button>
+</div>
+`;
+
+// SAVE SCORE TO DB
+fetch("/game/score",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({score:score})
+});
+
+}
+function goDashboard(){
+window.location.href = "dashboard.html";
 }

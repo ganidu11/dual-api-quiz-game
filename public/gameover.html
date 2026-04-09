@@ -8,7 +8,7 @@
 
 <body class="neon-bg">
 
-<div class="gameover-box">
+<div class="gameover-box glass">
 
 <h1 class="gameover-title">GAME OVER</h1>
 
@@ -20,15 +20,35 @@
 
 </div>
 
-<audio autoplay src="sounds/gameover.mp3"></audio>
+<audio id="gameOverSound" src="sounds/gameover.mp3"></audio>
 
 <script>
 
+// SHOW SCORE
 const score = localStorage.getItem("score");
-
 document.getElementById("finalScore").innerText = score;
 
-// SAVE SCORE TO SERVER
+// 🔊 PLAY SOUND AFTER PAGE LOAD (CONTROLLED)
+window.onload = function(){
+
+    const shouldPlay = sessionStorage.getItem("playGameOverSound");
+
+    if(shouldPlay === "true"){
+        const sound = document.getElementById("gameOverSound");
+
+        sound.currentTime = 0;
+        sound.volume = 1;
+
+        sound.play().catch(err=>{
+            console.log("Sound blocked:", err);
+        });
+
+        // clear flag
+        sessionStorage.removeItem("playGameOverSound");
+    }
+};
+
+// SAVE SCORE
 fetch("/game/score",{
 method:"POST",
 headers:{
@@ -44,6 +64,7 @@ console.log("Score saved:",data);
 console.log("Error saving score:",err);
 });
 
+// PLAY AGAIN
 function playAgain(){
 window.location.href="dashboard.html";
 }
