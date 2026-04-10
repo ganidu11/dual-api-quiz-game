@@ -5,16 +5,28 @@ gameOverSound.preload = "auto";
 let score = 0;
 let level = 1;
 let questionType = "banana";
-let timeLeft = 15;
 let timer;
 
-// START
-window.onload = ()=> nextQuestion();
+let difficulty = localStorage.getItem("difficulty") || "easy";
+
+// SET DIFFICULTY IN UI
+window.onload = ()=>{
+document.getElementById("diff").innerText = difficulty;
+nextQuestion();
+};
 
 // TIMER
 function startTimer(){
 clearInterval(timer);
-timeLeft = 15;
+
+let timeLeft;
+
+// ✅ TIMER BASED ON DIFFICULTY
+if(difficulty === "easy") timeLeft = 15;
+if(difficulty === "medium") timeLeft = 10;
+if(difficulty === "hard") timeLeft = 7;
+
+let totalTime = timeLeft;
 
 timer = setInterval(()=>{
 timeLeft--;
@@ -22,10 +34,10 @@ timeLeft--;
 let progress = document.getElementById("timerProgress");
 
 // update width
-progress.style.width = (timeLeft/15)*100 + "%";
+progress.style.width = (timeLeft/totalTime)*100 + "%";
 
 // 🔥 turn red in last 5 seconds
-if(timeLeft <= 5){
+if(timeLeft <= totalTime/3){
 progress.style.background = "#ff0033";
 }else{
 progress.style.background = "linear-gradient(90deg,#00f7ff,#9d00ff)";
@@ -121,7 +133,14 @@ nextQuestion();
 
 // EFFECTS
 function correct(){
-score++;
+    let points = 1;
+
+
+if(difficulty === "medium") points = 2;
+if(difficulty === "hard") points = 3;
+
+score += points;
+
 update();
 flash("#00ffcc");
 document.getElementById("correctSound").play();

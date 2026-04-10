@@ -12,21 +12,62 @@
 
 <h1 class="title">QUIZZLE</h1>
 
-<div>
-<button onclick="start()">Start Game</button>
-<button onclick="leader()">Leaderboard</button>
-<button onclick="logout()">Logout</button>
+<button onclick="openPopup()">Start Game</button> <button onclick="leader()">Leaderboard</button> <button onclick="logout()">Logout</button>
+
+</div>
+
+<!-- 🎮 POPUP -->
+
+<div id="popup" class="popup">
+
+<div class="popup-box">
+
+<h2>Select Difficulty</h2>
+
+<div class="difficulty-container">
+
+<div class="card easy" onclick="choose('easy')">Easy</div>
+<div class="card medium" onclick="choose('medium')">Medium</div>
+<div class="card hard" onclick="choose('hard')">Hard</div>
+
+</div>
+
+<button class="close-btn" onclick="closePopup()">Cancel</button>
+
 </div>
 
 </div>
+
 <script>
 
-function start(){ window.location="game.html"; }
+function openPopup(){
+    document.getElementById("popup").style.display = "flex";
+}
+
+function closePopup(){
+    document.getElementById("popup").style.display = "none";
+}
+
+function choose(level){
+    localStorage.setItem("difficulty", level);
+
+    // small delay for smooth feel
+    setTimeout(()=>{
+        window.location="game.html";
+    }, 300);
+}
+
 function leader(){ window.location="leaderboard.html"; }
 
 function logout(){
 fetch("/auth/logout")
 .then(()=>window.location="login.html");
+}
+window.onclick = function(e){
+    const popup = document.getElementById("popup");
+    if(e.target === popup){
+        popup.style.display = "none";
+    }
 }
 
 </script>
