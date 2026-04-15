@@ -1,3 +1,5 @@
+//used AI for get codes.
+
 const mysql = require("mysql2");
 
 const db = mysql.createConnection({

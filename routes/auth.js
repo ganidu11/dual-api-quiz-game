@@ -1,3 +1,5 @@
+//used AI for get codes.
+
 const express = require("express");
 const router = express.Router();
 const db = require("../db");

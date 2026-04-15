@@ -1,3 +1,5 @@
+//used AI for get codes.
+
 let score=0;
 let questionType="banana";
 let timer;

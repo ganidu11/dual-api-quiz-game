@@ -1,3 +1,5 @@
+//used AI for get codes.
+
 // 🔊 PRELOAD GAME OVER SOUND
 const gameOverSound = new Audio("sounds/gameover.mp3");
 gameOverSound.preload = "auto";
